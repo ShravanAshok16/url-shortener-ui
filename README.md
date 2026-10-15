@@ -60,43 +60,52 @@ React + TypeScript SPA for the [URL Shortener API](https://github.com/ShravanAsh
 ---
 
 ## 🏗️ Project Structure
+
+```
 url-shortener-ui/
 ├── src/
-│ ├── api/ # HTTP layer
-│ │ ├── client.ts # axios instance + interceptors
-│ │ ├── auth.ts # register, login
-│ │ ├── links.ts # createLink, listLinks, deleteLink
-│ │ └── types.ts # DTOs matching backend
-│ ├── components/
-│ │ ├── ui/ # Button, Input, Card
-│ │ └── layout/ # Header, Footer, Container
-│ ├── features/
-│ │ ├── auth/ # components + hooks for auth
-│ │ ├── links/ # components + hooks for links
-│ │ └── landing/ # landing page components
-│ ├── hooks/ # shared hooks (useMediaQuery, etc.)
-│ ├── lib/ # utils (cn, format, validation)
-│ ├── pages/ # route-level components
-│ ├── styles/globals.css # Tailwind directives + theme
-│ └── types/ # global types
+│   ├── api/                    # HTTP layer
+│   │   ├── client.ts           # axios instance + interceptors
+│   │   ├── auth.ts             # register, login
+│   │   ├── links.ts            # createLink, listLinks, deleteLink
+│   │   └── types.ts            # DTOs matching backend
+│   ├── components/
+│   │   ├── ui/                 # Button, Input, Card
+│   │   └── layout/             # Header, Footer, Container
+│   ├── features/
+│   │   ├── auth/               # components + hooks for auth
+│   │   ├── links/              # components + hooks for links
+│   │   └── landing/            # landing page components
+│   ├── hooks/                  # shared hooks
+│   ├── lib/                    # utils (cn, format, validation)
+│   ├── pages/                  # route-level components
+│   ├── styles/
+│   │   └── globals.css         # Tailwind directives + theme
+│   └── types/                  # global types
 ├── public/
 ├── .env.example
-├── .env.local # gitignored
+├── .env.local                  # gitignored
 ├── index.html
 ├── package.json
-├── tailwind.config.ts # (deleted — using v4 @theme in CSS)
 ├── tsconfig.json
 ├── vite.config.ts
 └── README.md
-
+```
 
 ### Layer Rules
 
-- **`api/`** — the only place that talks to the backend
-- **`components/ui/`** — dumb primitives, no domain knowledge
-- **`features/`** — self-contained modules (components + hooks + types per feature)
-- **`pages/`** — thin wrappers, wire components together
-- Features don't import from each other — shared code moves up to `components/` or `lib/`
+| Folder | Purpose | Rule |
+|---|---|---|
+| `api/` | HTTP layer | The **only** place that talks to the backend |
+| `components/ui/` | Primitives | Dumb components — visuals + props, no domain knowledge |
+| `components/layout/` | Structure | Header, Footer, Container |
+| `features/` | Feature modules | Self-contained: components + hooks + types |
+| `hooks/` | Shared hooks | Only used by >1 feature |
+| `lib/` | Utilities | `cn()`, formatting, validation schemas |
+| `pages/` | Route components | Thin — wire features together, no business logic |
+| `types/` | Global types | Shared TypeScript types |
+
+**Import rule:** features never import from each other. If two features need the same thing, move it up to `components/` or `lib/`.
 
 ---
 
