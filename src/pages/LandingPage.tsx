@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
 import { ArrowRight } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Container } from '../components/layout/Container';
@@ -10,6 +9,8 @@ import { Button } from '../components/ui/Button';
 import { createLink } from '../api/links';
 import type { CreateLinkResponse } from '../api/types';
 import { useAuth } from '../features/auth/hooks/auth-context';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export function LandingPage() {
   const [url, setUrl] = useState('');
@@ -18,13 +19,28 @@ export function LandingPage() {
 
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); 
 
   const mutation = useMutation({
     mutationFn: (originalUrl: string) => createLink({ originalUrl }),
-    onSuccess: (data) => {
-      setResult(data);
+    onSuccess: (result) => {
+      setResult(result.link);
       setError(null);
       setUrl('');
+      
+      // 🔥 THIS IS THE LINE THAT FIXES THE DASHBOARD REFRESH ISSUE:
+      queryClient.invalidateQueries({ queryKey: ['links'] });
+
+      if (result.isNew) {
+        toast.success('Link created!', {
+          action: { 
+            label: 'View dashboard', 
+            onClick: () => navigate('/dashboard') 
+          },
+        });
+      } else {
+        toast.info('You already shortened this URL. Here is your existing link.');
+      }
     },
     onError: (err: Error) => {
       setError(err.message);
@@ -122,13 +138,26 @@ export function LandingPage() {
             )}
           </Card>
 
-          {!result && (
+                    {/* Show CTA only if not authenticated */}
+          {!result && !isAuthenticated && (
             <p className="text-center text-sm text-text-muted mt-8">
               Want to save and manage your links?{' '}
               <Link to="/register" className="text-brand hover:underline">
                 Create a free account
               </Link>
             </p>
+          )}
+
+          {/* Show Dashboard link if authenticated */}
+          {isAuthenticated && (
+            <div className="text-center mt-8">
+              <Link to="/dashboard">
+                <Button variant="ghost" className="text-text-secondary hover:text-brand">
+                  Go to your dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           )}
         </Container>
       </main>

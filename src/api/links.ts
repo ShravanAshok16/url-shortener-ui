@@ -16,12 +16,14 @@ export interface ListLinksParams {
 
 export async function createLink(
   data: CreateLinkRequest
-): Promise<CreateLinkResponse> {
-  const { data: response } = await apiClient.post<CreateLinkResponse>(
-    '/api/Links',
-    data
-  );
-  return response;
+): Promise<{ link: CreateLinkResponse; isNew: boolean }> {
+  const response = await apiClient.post<CreateLinkResponse>('/api/Links', data);
+  
+  // 201 Created = new link, 200 OK = existing link returned
+  return {
+    link: response.data,
+    isNew: response.status === 201
+  };
 }
 
 export async function listLinks(
