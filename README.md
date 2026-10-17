@@ -2,89 +2,87 @@
 
 React + TypeScript SPA for the [URL Shortener API](https://github.com/ShravanAshok16/UrlShortener).
 
-> **Last Updated:** 2026-10-16
+> **Last Updated:** 2026-10-17
 
 ---
 
 ## 📌 Current Status
 
-**Phase:** Auth flow + landing page working
-**Progress:** `[████░░░░░░] 40%`
+**Phase:** Dashboard complete — ready for deployment
+**Progress:** `[████████░░] 80%`
 
 ### ✅ Done
-- Vite + React 19 + TypeScript
-- Tailwind CSS v4 with design tokens
-- API client with interceptors
-- API modules: `auth`, `links`
-- UI primitives: `Button`, `Input`, `Card`
-- **Auth flow**: register, login, logout, session persistence
-- **`useAuth` hook** + `AuthProvider` context
-- **`ProtectedRoute`** with return-to redirect
-- **LandingPage** — hero, shorten form (redirects guests to register)
-- **RegisterPage** — validation, auto-login on success
-- **LoginPage** — return-to redirect after login
-- **DashboardPage** — placeholder (real content on Day 13)
-- **NotFoundPage** — 404 handler
-- **Header + Container** layout components
-- Routes wired in `App.tsx`
+- Vite + React 19 + TypeScript foundation
+- Tailwind CSS v4 with custom design tokens (`@theme`)
+- Axios API client with interceptors (auth + error handling)
+- UI primitives: `Button`, `Input`, `Card`, `Dialog`, `Skeleton`, `EmptyState`
+- Auth flow: `AuthProvider`, `useAuth`, `ProtectedRoute`, session persistence
+- Pages: Landing, Login, Register, Dashboard, NotFound
+- Layouts: Header (with responsive nav), Container
+- **Dashboard Features:**
+  - `useLinks` hook (React Query, paginated, sortable, searchable)
+  - `LinkTable` (desktop) + `LinkCard` (mobile) responsive views
+  - `CopyButton` with visual + toast feedback
+  - `DeleteDialog` for single deletion with confirmation
+  - **Batch selection** with floating action bar and confirmation modal
+  - **Debounced search** (`useDebounce` hook) to prevent API spam
+  - Sorting (newest, oldest, most clicks, fewest clicks)
+  - Pagination (prev/next)
+  - `formatRelative` helper for timestamps
+  - Skeleton loaders and empty states (no data vs. no search results)
+  - Optimistic UI for deletions (instant feedback)
+- **Navigation:** Landing page success toast links directly to dashboard; header has a persistent dashboard link
 
 ### 🚧 In Progress
-- Preparing for Day 13 (dashboard with list, delete, copy)
+- Preparing for Day 14 (Deploy to Vercel + Security Audit)
 
-### 📝 Next Up (Day 13)
-- Fetch user's links with React Query
-- Table view on desktop, cards on mobile
-- Copy-to-clipboard with toast
-- Delete with confirmation dialog
-- Pagination controls
-- Empty state, loading skeletons
-- Search, filter, sort controls
+### 📝 Next Up (Day 14)
+- Create Vercel project and link GitHub
+- Configure Vercel environment variables (`VITE_API_URL`)
+- Create `vercel.json` with security headers (CSP, HSTS, etc.)
+- Update Render backend CORS to allow Vercel domain
+- Run Lighthouse audit (target ≥ 90)
+- Accessibility pass (keyboard nav, screen reader)
+- Write `SECURITY.md`
 
 ---
 
 ## 📚 Documentation
 
-- [Design System](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/DESIGN.md) — colors, typography, components
-- [Frontend Structure](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/FRONTEND_STRUCTURE.md) — conventions
-- [Requirements](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/REQUIREMENTS.md) — full spec
+- [Design System](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/DESIGN.md)
+- [Frontend Structure](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/FRONTEND_STRUCTURE.md)
+- [Requirements](https://github.com/ShravanAshok16/UrlShortener/blob/main/docs/REQUIREMENTS.md)
 
 ---
 
 ## 🗓️ Daily Log
 
+### 2026-10-17 (Day 13 — Dashboard Core + Polish)
+- Built `useLinks` hook with React Query (paginated, filtered, sorted).
+- Built `useDeleteLink` and `useBatchDeleteLinks` mutations with optimistic updates.
+- Created responsive views:
+  - `LinkTable` for desktop (checkboxes, columns).
+  - `LinkCard` for mobile (stacked, checkboxes).
+- Added `DeleteDialog` for single-item deletion.
+- Added batch delete flow with floating action bar and `<Dialog>` confirmation.
+- Built `useDebounce` hook and applied it to the dashboard search input.
+- Added `formatRelative` helper for human-readable dates.
+- Fixed React Query cache invalidation: creating a link on the landing page now immediately updates the dashboard list.
+- Fixed a TypeScript caching issue on Windows (removed duplicate `copyButton.tsx` casing).
+- Silenced React 19 ESLint warning by removing a redundant `useEffect` for selection clearing (handled in event handlers instead).
+- Added Dashboard links to the Header and the Landing Page result flow.
+
 ### 2026-10-16 (Day 12 — Auth Flow)
-- Split `useAuth` into two files to satisfy Fast Refresh:
-  - `auth-context.ts` — context + hook
-  - `useAuth.tsx` — `AuthProvider` component
-- Added `tokenStorage` helper in `api/client.ts`
-- 401 responses now dispatch `auth:unauthorized` event
-- `AuthProvider`:
-  - Lazy-initializes email from localStorage (no cascading renders)
-  - Listens for `auth:unauthorized` to clear session
-  - Exposes `register`, `login`, `logout`, `isAuthenticated`
-- `ProtectedRoute`:
-  - Redirects unauthenticated users to `/login`
-  - Saves attempted URL in router state for return-to
-- `Header` — auth-aware nav (Login/Sign up vs email + Logout)
-- `Container` — max-width wrapper for consistent page gutters
-- `LandingPage` — hero, shorten form, guest redirect to register
-- `RegisterPage` — email/password with client-side validation
-- `LoginPage` — login with return-to redirect
-- `DashboardPage` — placeholder showing signed-in email
-- `NotFoundPage` — 404 handler
-- `App.tsx` — routes wired with `AuthProvider` + `ProtectedRoute`
+- Split `useAuth` into `auth-context.ts` and `useAuth.tsx` (Fast Refresh).
+- Added `tokenStorage` helper and `auth:unauthorized` event for 401s.
+- Created `AuthProvider`, `useAuth` hook, and `ProtectedRoute` with `from` redirect.
+- Built Landing, Register, Login, Dashboard (placeholder), and NotFound pages.
+- Added `Header` and `Container` layout components.
 
 ### 2026-10-15 (Day 11 — Setup)
-- Vite + React 19 + TypeScript project
-- Tailwind CSS v4 with `@theme` tokens
-- Inter + JetBrains Mono fonts
-- `.env.local` for `VITE_API_URL`
-- Folder structure (api / components / features / pages / styles / lib)
-- API client with request/response interceptors
-- API modules: `auth.ts`, `links.ts`, `types.ts`
-- UI primitives: `Button`, `Input`, `Card`
-- React Query + React Router + Sonner wired
-- Pushed to GitHub with README + topics
+- Vite + React 19 + TypeScript project.
+- Tailwind CSS v4 with `@theme` tokens.
+- Axios client, API modules (`auth`, `links`), and UI primitives.
 
 <!-- Add new entries at the top, newest first -->
 
@@ -121,8 +119,6 @@ url-shortener-ui/
 ├── vite.config.ts
 └── README.md
 ```
-
-
 ### Layer Rules
 
 | Folder | Purpose | Rule |
@@ -132,46 +128,38 @@ url-shortener-ui/
 | `components/layout/` | Structure | Header, Container, ProtectedRoute |
 | `features/` | Feature modules | Self-contained — components + hooks + types |
 | `hooks/` | Shared hooks | Only if used by >1 feature |
-| `lib/` | Utilities | `cn()`, formatting, validation |
+| `lib/` | Utilities | `cn()`, `formatRelative`, etc. |
 | `pages/` | Route components | Thin — wire features together |
 
 **Import rules:**
-- Features don't import from each other
-- `useAuth` (hook) → import from `auth-context`
-- `AuthProvider` (component) → import from `useAuth`
+- Features don't import from each other.
+- `useAuth` (hook) → import from `auth-context`.
+- `AuthProvider` (component) → import from `useAuth`.
 
 ---
 
 ## 🔌 API Integration
 
 ### Base URL
-From `VITE_API_URL` in `.env.local`:
-
+From `VITE_API_URL` in `.env.local`.
 
 ### Endpoints used
-
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/api/Auth/register` | Create account, returns JWT |
 | `POST` | `/api/Auth/login` | Authenticate, returns JWT |
-| `POST` | `/api/Links` | Create short link |
-| `GET` | `/api/Links` | List user's links |
+| `POST` | `/api/Links` | Create short link (deduplicates existing user URLs) |
+| `GET` | `/api/Links` | List user's links (paginated, filterable, sortable) |
 | `DELETE` | `/api/Links/{id}` | Soft-delete a link |
-
-### Auth
-- JWT stored in `localStorage` (key: `url-shortener-token`)
-- Attached automatically via axios request interceptor
-- 401 responses trigger session clear + event dispatch
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **React 19**
-- **TypeScript** (strict)
-- **Vite** (build)
+- **React 19**, **TypeScript** (strict)
+- **Vite** (build tool)
 - **Tailwind CSS v4** (styling)
-- **TanStack Query v5** (server state)
+- **TanStack Query v5** (server state, optimistic updates)
 - **React Router v7** (routing)
 - **Axios** (HTTP)
 - **Sonner** (toasts)
@@ -186,7 +174,6 @@ From `VITE_API_URL` in `.env.local`:
 - Backend running locally or on Render
 
 ### 1. Clone & Install
-
 ```bash
 git clone https://github.com/ShravanAshok16/url-shortener-ui.git
 cd url-shortener-ui
