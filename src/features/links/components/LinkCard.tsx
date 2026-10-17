@@ -57,6 +57,7 @@ export function LinkCard({ link, onDelete, isSelected, onToggleSelection }: Prop
           size="sm"
           onClick={() => onDelete(link)}
           aria-label="Delete link"
+          className="h-10 w-10 hover:bg-error-subtle" 
         >
           <Trash2 className="h-4 w-4 text-error" />
         </Button>

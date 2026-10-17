@@ -14,11 +14,12 @@ import { Pagination } from '../features/links/components/Pagination';
 import { DeleteDialog } from '../features/links/components/DeleteDialog';
 import { useLinks } from '../features/links/hooks/useLinks';
 import { useBatchDeleteLinks } from '../features/links/hooks/useDeleteLink';
+import { useDebounce } from '../hooks/useDebounce';
 import type { LinkListItem } from '../api/types';
 
 export function DashboardPage() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [sort, setSort] = useState('created_desc');
   const [deleteTarget, setDeleteTarget] = useState<LinkListItem | null>(null);
 
@@ -26,11 +27,13 @@ export function DashboardPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBatchDelete, setShowBatchDelete] = useState(false);
 
+  const debouncedSearch = useDebounce(searchInput, 300);
+
   // Data fetching
   const { data, isLoading, isError, error } = useLinks({
     page,
     pageSize: 10,
-    search: search.trim() || undefined,
+    search: debouncedSearch.trim() || undefined,
     sort,
     isActive: true,
   });
@@ -68,19 +71,11 @@ export function DashboardPage() {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    setSelectedIds(new Set());
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setPage(1);
-    setSelectedIds(new Set());
   };
 
   const handleSortChange = (value: string) => {
     setSort(value);
     setPage(1);
-    setSelectedIds(new Set());
   };
 
   return (
@@ -107,14 +102,17 @@ export function DashboardPage() {
           </div>
 
           {/* Filters */}
-          {!isLoading && links.length > 0 && (
+          {!isLoading && (
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="flex-1">
                 <Input
                   type="search"
                   placeholder="Search by URL..."
-                  value={search}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    setPage(1);
+                  }}
                   aria-label="Search links"
                 />
               </div>
@@ -154,14 +152,14 @@ export function DashboardPage() {
           {!isLoading && !isError && links.length === 0 && (
             <div className="rounded-lg border border-border bg-white">
               <EmptyState
-                title={search ? 'No links match your search' : 'No links yet'}
+                title={searchInput ? 'No links match your search' : 'No links yet'}
                 description={
-                  search
+                  searchInput
                     ? 'Try a different search term.'
                     : 'Shorten your first URL to get started.'
                 }
                 action={
-                  !search && (
+                  !searchInput && (
                     <Link to="/">
                       <Button>
                         <Plus className="h-4 w-4" />
