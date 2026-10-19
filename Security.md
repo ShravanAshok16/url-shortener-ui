@@ -1,5 +1,21 @@
 # Security Policy
 
+## URL Shortener UI
+
+A responsive React 19 frontend for the URL Shortener API. 
+
+🌐 **Live App:** [https://url-shortener-ui-flax.vercel.app](https://url-shortener-ui-flax.vercel.app)  
+🔌 **API Repo:** [UrlShortener](https://github.com/ShravanAshok16/UrlShortener)
+
+![Dashboard Screenshot](public/screenshot-dashboard.png)
+
+### ✨ Features
+- **Authentication:** JWT-based login and registration with session persistence.
+- **Dashboard:** Paginated table (desktop) and cards (mobile).
+- **Batch Actions:** Multi-select checkboxes with optimistic batch deletion.
+- **Search & Sort:** Debounced search input with server-side sorting.
+- **Performance:** Lighthouse scores of 99 (Desktop) and 93 (Mobile).
+
 ## Supported Versions
 
 Currently, only the latest deployment on `main` is supported with security updates.
